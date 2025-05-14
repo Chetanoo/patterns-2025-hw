@@ -18,7 +18,7 @@ class Table {
   constructor(tableString) {
     this.lines = tableString.split('\n');
     this.#createTable();
-    this.#normalizeTable();
+    this.#modifyTable();
   }
 
   #createTable() {
@@ -30,7 +30,7 @@ class Table {
     return this.table;
   }
 
-  #normalizeTable() {
+  #modifyTable() {
     this.table.sort((r1, r2) => r2[3] - r1[3]);
     const maxDensityValue = this.table[0][3];
     if (!maxDensityValue) return;
