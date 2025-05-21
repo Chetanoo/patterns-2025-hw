@@ -5,20 +5,20 @@ type Table = Row[];
 type PadValues = number[];
 type InputData = string;
 
-const data: InputData;
-function parseDataStringIntoTable(data: InputData): Table
-function calculatePadValues(table: Table): PadValues
-function sortTableByColumn(table: Table, columnIndex: number): Table
-function addPercentageOfMaxDensity(table: Table): void
-function printTable(table: Table, padValues: PadValues): void
-function main(data: InputData): void
+declare const data: InputData;
+declare function parseDataString(data: InputData): [Row, Table];
+declare function calculatePadValues(table: Table): PadValues;
+declare function sortTableByIntegerColumn(table: Table, columnIndex: number): Table;
+declare function addPercentageOfMaxDensity(table: Table, headers: Row): [Row, Table];
+declare function printTable(table: Table, padValues: PadValues, headers: Row): void;
+declare function main(data: InputData): void;
 
 module.exports = {
   data,
   calculatePadValues,
-  sortTableByColumn,
+  sortTableByIntegerColumn,
   addPercentageOfMaxDensity,
   printTable,
   main,
-  parseDataStringIntoTable
-}
+  parseDataString
+};

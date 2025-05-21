@@ -28,24 +28,28 @@ const data = `city,population,area,density,country
 const separator = ',';
 const padOffset = 3;
 
-function parseDataStringIntoTable(data) {
+function parseDataString(data) {
   if (!data) throw new Error('Please provide correct data');
 
   const lines = data.split('\n');
 
   if (!lines.length) throw new Error('The data is empty');
 
+  if (lines[1].trim() !== lines[1]) {
+    lines[0] = '  ' + lines[0];
+  }
+  const headers = lines[0].split(separator);
   const table = [];
   for (let i = 1; i < lines.length; i++) {
     const row = lines[i].split(separator);
     table.push(row);
   }
-  return table;
+  return [headers, table];
 }
 
 function calculatePadValues(table) {
   if (!table?.length) throw new Error('Table is empty');
-  const padValues = Array(table[0].length).fill(0);
+  const padValues = Array(table[0]?.length).fill(0);
   for (let i = 0; i < table.length; i++) {
     const row = table[i];
     for (let j = 0; j < table[i].length; j++) {
@@ -57,45 +61,59 @@ function calculatePadValues(table) {
   return padValues;
 }
 
-function sortTableByColumn(table, columnIndex) {
+function sortTableByIntegerColumn(table, columnIndex) {
+  if (!table?.length) throw new Error('Table is not valid');
+  if (
+    !parseInt(table[0][columnIndex])
+  ) throw new Error('Table cannot be sorted by that value');
   return table.toSorted(
-    (r1, r2) => r2[columnIndex].localeCompare(r1[columnIndex]),
+    (r1, r2) => parseInt(r2[columnIndex]) - parseInt(r1[columnIndex]),
   );
 }
 
-function addPercentageOfMaxDensity(table) {
+function addPercentageOfMaxDensity(table, headers) {
   if (!table?.length) throw new Error('Table is not valid');
-  sortTableByColumn(table, 3);
-  const firstRow = table[0];
+  const sortedTable = sortTableByIntegerColumn(table, 3);
+  const firstRow = sortedTable[0];
   if (!firstRow) throw new Error('Table is not valid');
   const maxDensityValue = parseInt(firstRow[3]);
   if (!maxDensityValue) throw new Error('Invalid value');
-  for (const row of table) {
+  const newHeaders = [...headers, 'percentage of max density'];
+  for (const row of sortedTable) {
     const density = parseInt(row[3]);
     const percentageOfMaxDensity = Math.round(
       (density * 100) / maxDensityValue,
     ).toString();
     row.push(percentageOfMaxDensity);
   }
+  return [newHeaders, sortedTable];
 }
 
-function printTable(table, padValues) {
+function printTable(table, padValues, headers) {
   if (!table?.length) throw new Error('Table is not valid');
+  if (headers?.length) {
+    const headersToPrint = headers.map(
+      (val, index) => val.padEnd(padValues[index]),
+    ).join('');
+    console.log(headersToPrint);
+  }
   for (const row of table) {
-    const rowPrintValue = row.reduce(
-      (acc, curr, index) => acc + curr.padEnd(padValues[index]),
-      '',
-    );
+    const rowPrintValue = row.map(
+      (val, index) => val.padEnd(padValues[index]),
+    ).join('');
     console.log(rowPrintValue);
   }
 }
 
 function main(data) {
   try {
-    const table = parseDataStringIntoTable(data);
-    const padValues = calculatePadValues(table);
-    addPercentageOfMaxDensity(table);
-    printTable(table, padValues);
+    const [headers, table] = parseDataString(data);
+    const [
+      headersWithPercentage,
+      tableWithPercentage,
+    ] = addPercentageOfMaxDensity(table, headers);
+    const padValues = calculatePadValues(tableWithPercentage);
+    printTable(tableWithPercentage, padValues, headersWithPercentage);
   } catch (e) {
     console.log({ error: e.message });
   }
