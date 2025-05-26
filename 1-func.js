@@ -120,3 +120,10 @@ function main(data) {
 }
 
 main(data);
+
+module.exports = {
+  parseDataString,
+  calculatePadValues,
+  sortTableByIntegerColumn,
+  addPercentageOfMaxDensity,
+};
