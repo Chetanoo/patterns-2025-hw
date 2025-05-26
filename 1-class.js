@@ -13,46 +13,87 @@ const data = `city,population,area,density,country
   Bangkok,8280925,1569,5279,Thailand`;
 
 class Table {
-  padValues = [18, 10, 8, 8, 18, 6];
+  padValues = null;
+  table = null;
+  headers = null;
+  separator = ',';
+  padOffset = 5;
 
   constructor(tableString) {
-    this.lines = tableString.split('\n');
-    this.#createTable();
-    this.#modifyTable();
+    this.#parseDataString(tableString);
   }
 
-  #createTable() {
+  #parseDataString(data) {
     this.table = [];
-    for (let i = 1; i < this.lines.length; i++) {
-      const row = this.lines[i].split(',');
+
+    const lines = data.split('\n');
+
+    if (lines[1].trim() !== lines[1]) {
+      lines[0] = '  ' + lines[0];
+    }
+
+    this.headers = lines[0].split(this.separator);
+    for (let i = 1; i < lines.length; i++) {
+      const row = lines[i].split(this.separator);
       this.table.push(row);
     }
-    return this.table;
+
+    return this;
   }
 
-  #modifyTable() {
-    this.table.sort((r1, r2) => r2[3] - r1[3]);
-    const maxDensityValue = this.table[0][3];
-    if (!maxDensityValue) return;
+  #calculatePadValues() {
+    this.padValues = Array(this.table[0]?.length).fill(0);
+    for (let i = 0; i < this.table.length; i++) {
+      const row = this.table[i];
+      for (let j = 0; j < this.table[i].length; j++) {
+        if (row[j].length > this.padValues[j]) {
+          this.padValues[j] = row[j].length + this.padOffset;
+        }
+      }
+    }
+  }
+
+  sortTableByIntegerColumn(columnIndex) {
+    this.table.sort(
+      (r1, r2) => parseInt(r2[columnIndex]) - parseInt(r1[columnIndex]),
+    );
+    return this;
+  }
+
+  addPercentageOfMaxDensity() {
+    if (!this.table?.length) return this;
+    this.sortTableByIntegerColumn(3);
+    const firstRow = this.table[0];
+    const maxDensityValue = parseInt(firstRow[3]);
     for (const row of this.table) {
       const density = parseInt(row[3]);
       const percentageOfMaxDensity = Math.round(
         (density * 100) / maxDensityValue,
-      );
-      row.push(percentageOfMaxDensity.toString());
+      ).toString();
+      row.push(percentageOfMaxDensity);
     }
+    return this;
   }
 
   printTable() {
+    this.#calculatePadValues();
+    const headersToPrint = this.headers.map(
+      (val, index) => val.padEnd(this.padValues[index]),
+    ).join('');
+    console.log(headersToPrint);
     for (const row of this.table) {
-      const rowPrintValue = row.reduce(
-        (acc, curr, index) => acc + curr.padEnd(this.padValues[index]),
-        '',
-      );
+      const rowPrintValue = row.map(
+        (val, index) => val.padEnd(this.padValues[index]),
+      ).join('');
       console.log(rowPrintValue);
     }
+    return this;
   }
 }
 
+
+
 const table = new Table(data);
-table.printTable();
+table
+  .addPercentageOfMaxDensity()
+  .printTable();

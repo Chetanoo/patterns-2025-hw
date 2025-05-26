@@ -26,7 +26,7 @@ const data = `city,population,area,density,country
   Bangkok,8280925,1569,5279,Thailand`;
 
 const separator = ',';
-const padOffset = 3;
+const padOffset = 5;
 
 function parseDataString(data) {
   if (!data) throw new Error('Please provide correct data');
