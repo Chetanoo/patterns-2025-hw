@@ -78,7 +78,7 @@ class Basket {
   }
 }
 
-const printBasket = async (basket) => {
+const printBasket = (basket) => {
   basket
     .then((data) => console.log(data))
     .finally(() => console.log('Finished'));
