@@ -75,12 +75,12 @@ describe('functional module tests', () => {
 
   test('addPadding should apply padding correctly to headers and rows', () => {
     const [headers, table] = parseData(tableString);
-    const { padValues } = calculatePaddings([headers, table]);
-    const [paddedHeaders, paddedTable] = addPadding({
+    const [,, padValues] = calculatePaddings([headers, table]);
+    const [paddedHeaders, paddedTable] = addPadding([
       headers,
       table,
       padValues,
-    });
+    ]);
 
     for (let colIndex = 0; colIndex < headers.length; colIndex++) {
       assert.strictEqual(

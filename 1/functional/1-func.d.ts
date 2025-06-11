@@ -19,15 +19,15 @@ declare function calculatePaddings([headers, table]: [Row, Table]): {
   padValues: PadValues;
 };
 
-declare function addPadding({
+declare function addPadding([
   headers,
   table,
   padValues,
-}: {
-  headers: Row;
-  table: Table;
-  padValues: PadValues;
-}): [Row, Table];
+]: [
+  Row,
+  Table,
+  PadValues,
+]): [Row, Table];
 
 declare function printTable([headers, table]: [Row, Table]): void;
 

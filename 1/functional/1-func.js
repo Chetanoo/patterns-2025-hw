@@ -45,10 +45,10 @@ const calculatePaddings = ([headers, table]) => {
     }
   }
 
-  return { headers, table, padValues };
+  return [headers, table, padValues];
 };
 
-const addPadding = ({ headers, table, padValues }) => {
+const addPadding = ([headers, table, padValues]) => {
   const padRow = (row) => row.map(
     (value, index) => value.padEnd(padValues[index]),
   );
