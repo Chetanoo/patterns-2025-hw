@@ -3,16 +3,17 @@
 const { tableString: data } = require('../mocks');
 const { densityIndex } = require('../constants');
 
-const TableConstructor = require('./TableConstructor');
+const TableBuilder = require('./TableBuilder');
 const TablePrinter = require('./TablePrinter');
 
-const table = new TableConstructor(data);
+const tableBuilder = new TableBuilder(data);
 
-table
+tableBuilder
   .addPercentageOfMaxDensity()
-  .addColumnToHeaders('percentage of max density')
   .sortTableByIntegerColumn(densityIndex);
 
-const tablePrinter = new TablePrinter(table);
+const tableInstance = tableBuilder.getTable();
+
+const tablePrinter = new TablePrinter(tableInstance);
 
 tablePrinter.printTableWithPaddings();

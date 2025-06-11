@@ -14,10 +14,12 @@ export interface AsyncPurchaseIterator {
   next(): Promise<IteratorResult<PurchaseItem>>;
 }
 
-export interface PurchaseIterator {
-  create(items: PurchaseItem[]): {
-    [Symbol.asyncIterator](): AsyncPurchaseIterator;
-  };
+export class PurchaseIterator {
+  private constructor(purchase: PurchaseItem[]);
+
+  static create(items: PurchaseItem[]): PurchaseIterator;
+
+  [Symbol.asyncIterator](): AsyncPurchaseIterator;
 }
 
 export interface BasketOptions {
@@ -25,6 +27,9 @@ export interface BasketOptions {
 }
 
 export class Basket {
+  #promise: Promise<BasketResult>;
+  #resolve: (result: BasketResult) => void;
+
   constructor(options: BasketOptions);
 
   limit: number;
@@ -36,8 +41,10 @@ export class Basket {
   };
 
   add(item: PurchaseItem): void;
+  end(): Basket;
 
-  end(): void;
-
-  then(onFulfilled: (data: BasketResult) => void): void;
+  then(onFulfilled: (data: BasketResult) => void): Promise<void>;
+  finally(onFinally: () => void): Promise<void>;
 }
+
+export function printBasket(basket: Basket): Promise<void>;

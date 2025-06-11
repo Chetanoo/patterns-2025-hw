@@ -17,29 +17,19 @@ const { tableString: data } = require('../mocks');
 const { separator, padOffset, densityIndex } = require('../constants');
 
 function parseDataString(data) {
-  if (!data) throw new Error('Please provide correct data');
-
   const lines = data.split('\n');
-
-  if (!lines.length) throw new Error('The data is empty');
-
-  if (lines[1].trim() !== lines[1]) {
-    lines[0] = '  ' + lines[0];
-  }
 
   const headers = lines[0].split(separator);
   const table = [];
 
   for (let i = 1; i < lines.length; i++) {
-    const row = lines[i].split(separator);
+    const row = lines[i].trim().split(separator);
     table.push(row);
   }
   return [headers, table];
 }
 
 function calculatePadValues(table) {
-  if (!table?.length) throw new Error('Table is empty');
-
   const padValues = Array(table[0]?.length).fill(0);
 
   for (let i = 0; i < table.length; i++) {
@@ -55,40 +45,32 @@ function calculatePadValues(table) {
 }
 
 function sortTableByIntegerColumn(table, columnIndex) {
-  if (!table?.length) throw new Error('Table is not valid');
-
   return table.toSorted(
     (r1, r2) => parseInt(r2[columnIndex]) - parseInt(r1[columnIndex]),
   );
 }
 
-function addPercentageOfMaxDensity(table) {
-  if (!table?.length) throw new Error('Table is not valid');
+function addPercentageOfMaxDensity(headers, table) {
+  let maxDensity = -Infinity;
+  for (let i = 0; i < table.length; i++) {
+    const density = parseInt(table[i][densityIndex]);
+    if (density > maxDensity) maxDensity = density;
+  }
 
-  const maxDensityValue = ((table) => {
-    let maxDensity = -Infinity;
-    for (let i = 0; i < table.length; i++) {
-      const density = parseInt(table[i][densityIndex]);
-      if (density > maxDensity) maxDensity = density;
-    }
-    return maxDensity;
-  })(table);
+  const newHeaders = [...headers, 'percentage of max density'];
 
-  return table.map((row) => {
+  const newTable = table.map((row) => {
     const density = parseInt(row[densityIndex]);
     const percentageOfMaxDensity = Math.round(
-      (density * 100) / maxDensityValue,
+      (density * 100) / maxDensity,
     ).toString();
     return [...row, percentageOfMaxDensity];
   });
-}
 
-function addColumnToHeaders(headers, columnName) {
-  return [...headers, columnName];
+  return [newHeaders, newTable];
 }
 
 function printTable(table, padValues, headers) {
-  if (!table?.length) throw new Error('Table is not valid');
   if (headers?.length) {
     const headersToPrint = headers.map(
       (val, index) => val.padEnd(padValues[index]),
@@ -108,11 +90,11 @@ function main(data) {
     const [headers, table] = parseDataString(data);
 
     const sortedTable = sortTableByIntegerColumn(table, densityIndex);
-    const tableWithPercentage = addPercentageOfMaxDensity(sortedTable);
-    const headersWithPercentage = addColumnToHeaders(
-      headers,
-      'percentage of max density',
-    );
+    const [
+      headersWithPercentage,
+      tableWithPercentage,
+    ] = addPercentageOfMaxDensity(headers, sortedTable);
+
     const padValues = calculatePadValues(tableWithPercentage);
 
     printTable(tableWithPercentage, padValues, headersWithPercentage);
@@ -127,6 +109,5 @@ module.exports = {
   parseDataString,
   calculatePadValues,
   sortTableByIntegerColumn,
-  addColumnToHeaders,
   addPercentageOfMaxDensity,
 };

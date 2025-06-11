@@ -2,29 +2,36 @@
 
 const { purchase } = require('./mocks');
 
-const PurchaseIterator = {
-  create(items) {
-    const asyncIterator =  {
-        counter: 0,
-        async next() {
-          const item = items[this.counter];
-          this.counter++;
-          return {
-            value: item,
-            done: this.counter >= items.length,
-          };
-        },
-    };
+class PurchaseIterator {
+  #items = [];
+
+  constructor(purchase) {
+    this.#items = purchase;
+  }
+
+  static create(items) {
+    return new PurchaseIterator(items);
+  }
+
+  [Symbol.asyncIterator]() {
+    let counter = 0;
+    const items = this.#items;
     return {
-      [Symbol.asyncIterator]: () => asyncIterator,
-    };
-  },
-};
+      async next() {
+        const item = items[counter];
+        counter++;
+        return {
+          value: item,
+          done: counter > items.length,
+        };
+      },
+  };
+  }
+}
 
 class Basket {
   #promise;
   #resolve;
-  #reject;
 
   limit;
   total = 0;
@@ -35,11 +42,10 @@ class Basket {
   };
 
   constructor({ basketTotalLimit }) {
-    const { resolve, promise, reject } = Promise.withResolvers();
+    const { resolve, promise } = Promise.withResolvers();
 
     this.#promise = promise;
     this.#resolve = resolve;
-    this.#reject = reject;
     this.limit = basketTotalLimit;
   }
 
@@ -64,13 +70,7 @@ class Basket {
   }
 
   then(onFulfilled) {
-    this.#promise.then(onFulfilled);
-    return this;
-  }
-
-  catch(onRejected) {
-    this.#promise.catch(onRejected);
-    return this;
+    return this.#promise.then(onFulfilled);
   }
 
   finally(onFinally) {
@@ -78,19 +78,29 @@ class Basket {
   }
 }
 
+const printBasket = async (basket) => {
+  basket
+    .then((data) => console.log(data))
+    .finally(() => console.log('Finished'));
+};
+
 const main = async () => {
   const goods = PurchaseIterator.create(purchase);
   const basket = new Basket({ basketTotalLimit: 1050 });
+
+  printBasket(basket);
 
   for await (const item of goods) {
     basket.add(item);
   }
 
-  basket
-    .end()
-    .then((data) => console.log(data))
-    .catch((err) => console.log(err))
-    .finally(() => console.log('what a final'));
+  basket.end();
 };
 
 void main();
+
+module.exports = {
+  PurchaseIterator,
+  Basket,
+  printBasket,
+};

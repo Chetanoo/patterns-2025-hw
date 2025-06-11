@@ -6,7 +6,7 @@ const { tableString: data } = require('../mocks');
 const { densityIndex } = require('../constants');
 
 const Table = require('./Table');
-const TableConstructor = require('./TableConstructor');
+const TableBuilder = require('./TableBuilder');
 const TablePrinter = require('./TablePrinter');
 
 describe('1-oop module tests', () => {
@@ -24,27 +24,25 @@ describe('1-oop module tests', () => {
     );
     assert.deepStrictEqual(
       table.headers,
-      ['  city', 'population', 'area', 'density', 'country'],
+      ['city', 'population', 'area', 'density', 'country'],
       'Headers should match the expected values',
     );
   });
 
-  test('TableConstructor should add percentage of max density correctly',
-    () => {
-    const tableConstructor = new TableConstructor(data);
-    tableConstructor.addPercentageOfMaxDensity();
-    const maxDensityRow = tableConstructor.table.data.find(
+  test('TableBuilder should add percentage of max density correctly', () => {
+    const tableBuilder = new TableBuilder(data);
+    tableBuilder.addPercentageOfMaxDensity();
+    const table = tableBuilder.getTable();
+    const maxDensityRow = table.data.find(
       (row) =>
-        parseInt(row[densityIndex]) === Math.max(
-          ...tableConstructor.table.data.map(
-            (row) => parseInt(row[densityIndex]),
-          ),
+        Number(row[densityIndex]) === Math.max(
+          ...table.data.map((row) => Number(row[densityIndex])),
         ),
     );
-    const lastColumnValue = parseInt(maxDensityRow[maxDensityRow.length - 1]);
+    const lastColumnValue = Number(maxDensityRow.at(-1));
 
     assert.strictEqual(
-      tableConstructor.table.data[0].length,
+      table.data[0]?.length,
       6,
       'Rows should have an additional column after adding density percentages',
     );
@@ -56,11 +54,12 @@ describe('1-oop module tests', () => {
     );
   });
 
-  test('TableConstructor should sort rows by a numerical column', () => {
-    const tableConstructor = new TableConstructor(data);
-    tableConstructor.sortTableByIntegerColumn(densityIndex);
-    const sortedDensities = tableConstructor.table.data.map((row) =>
-      parseInt(row[densityIndex]),
+  test('TableBuilder should sort rows by a numerical column', () => {
+    const tableBuilder = new TableBuilder(data);
+    tableBuilder.sortTableByIntegerColumn(densityIndex);
+    const table = tableBuilder.getTable();
+    const sortedDensities = table.data.map((row) =>
+      Number(row[densityIndex]),
     );
 
     assert.deepStrictEqual(
@@ -70,19 +69,17 @@ describe('1-oop module tests', () => {
     );
   });
 
-  test('TablePrinter should calculate correct padding and print table',
-    () => {
+  test('TablePrinter should calculate correct padding and print table', () => {
     const consoleOutput = [];
     const originalLog = console.log;
     console.log = (message) => consoleOutput.push(message);
 
-    const tableConstructor = new TableConstructor(data);
-    tableConstructor
+    const tableBuilder = new TableBuilder(data);
+    tableBuilder
       .addPercentageOfMaxDensity()
-      .addColumnToHeaders('percentage of max density')
       .sortTableByIntegerColumn(densityIndex);
 
-    const tablePrinter = new TablePrinter(tableConstructor);
+    const tablePrinter = new TablePrinter(tableBuilder.getTable());
     tablePrinter.printTableWithPaddings();
 
     console.log = originalLog;

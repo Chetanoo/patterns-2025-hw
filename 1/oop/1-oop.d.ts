@@ -7,20 +7,21 @@ declare class Table {
   constructor(tableString: string);
 }
 
-declare class TableConstructor {
+declare class TableBuilder {
   public table: Table;
 
   constructor(data: string);
+  getTable(): Table;
   addPercentageOfMaxDensity(): this;
   sortTableByIntegerColumn(columnIndex: number): this;
 }
 
 declare class TablePrinter {
   private padValues: number[] | undefined;
-  private constructorInstance: TableConstructor;
+  private tableInstance: Table;
 
-  constructor(instance: TableConstructor);
+  constructor(instance: Table);
   printTableWithPaddings(): this;
 }
 
-export { Table, TableConstructor, TablePrinter };
+export { Table, TableBuilder, TablePrinter };
