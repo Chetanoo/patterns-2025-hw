@@ -2,14 +2,14 @@
 
 const poolify = (
   factory,
-  options,
+  factoryOptions,
   size,
   max,
 ) => {
   const instances = new Array(size).fill(null)
-    .map(() => factory(options));
+    .map(() => factory(factoryOptions));
 
-  const acquire = () => instances.pop() || factory(options);
+  const acquire = () => instances.pop() || factory(factoryOptions);
 
   const release = (instance) => {
     if (instances.length < max) {
