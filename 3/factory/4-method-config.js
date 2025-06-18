@@ -22,7 +22,7 @@ class Creator2 {
     this.Blueprint = Blueprint;
   }
 
-  factoryMethod(args) {
+  factoryMethod(...args) {
     return new this.Blueprint(...args);
   }
 }
