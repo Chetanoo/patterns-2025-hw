@@ -24,12 +24,13 @@ class Pool {
 
       if (instance) resolve(instance);
 
-      this.#queue.push(resolve);
-
       if (this.#createdAmount + this.#size < this.#max) {
         this.#createdAmount++;
-        this.#instances.push(this.#factory(this.#options));
+        resolve(this.#factory(this.#options));
+        return;
       }
+
+      this.#queue.push(resolve);
     });
   }
 
