@@ -22,7 +22,10 @@ class Pool {
     return new Promise((resolve) => {
       const instance = this.#instances.pop();
 
-      if (instance) resolve(instance);
+      if (instance) {
+        resolve(instance);
+        return;
+      }
 
       if (this.#createdAmount + this.#size < this.#max) {
         this.#createdAmount++;

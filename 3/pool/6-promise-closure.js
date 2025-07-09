@@ -10,7 +10,10 @@ const poolify = (factory, options, size, max) => {
     new Promise((resolve) => {
       const instance = instances.pop();
 
-      if (instance) resolve(instance);
+      if (instance) {
+        resolve(instance);
+        return;
+      }
 
 
       if (createdAmount + size < max) {
