@@ -72,7 +72,7 @@ console.log(png(persons));
 console.groupEnd();
 
 console.group('\nConsoleRenderer:');
-console.table(con(persons));
+console.log(con(persons));
 console.groupEnd();
 
 console.group('\nWebRenderer:');
