@@ -1,8 +1,8 @@
 'use strict';
 
 class Product {
-  constructor(value) {
-    this.field = value;
+  constructor(...values) {
+    this.values = values;
   }
 }
 
@@ -11,8 +11,8 @@ class Creator {
     this.defaultValue = defaultValue;
   }
 
-  factoryMethod() {
-    return new Product(this.defaultValue);
+  factoryMethod(...args) {
+    return new Product(this.defaultValue, ...args);
   }
 }
 
@@ -22,7 +22,7 @@ const config = { defaultValue: 'default' };
 
 const creator = new Creator(config);
 console.dir(creator);
-const product = creator.factoryMethod();
+const product = creator.factoryMethod('test');
 console.dir(product);
 const product2 = creator.factoryMethod();
 console.dir(product2);

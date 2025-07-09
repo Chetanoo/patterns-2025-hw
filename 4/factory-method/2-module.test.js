@@ -3,71 +3,71 @@
 const assert = require('node:assert');
 const { describe, test } = require('node:test');
 
-const {
-  Cursor,
-  Database,
-  FileStorage,
-} = require('./2-module.js');
+const { Storage } = require('./2-module.js');
 
 const { mockData } = require('./mocks');
 
+
 describe('2-module unit tests', () => {
-  test('Database should throw error when instantiated', () => {
-    assert.throws(
-      () => new Database(),
-      {
-        name: 'Error',
-        message: 'Abstract class should not be instantiated',
-      },
-    );
-  });
-
-  test('Cursor should throw error when instantiated', () => {
-    assert.throws(
-      () => new Cursor(),
-      {
-        name: 'Error',
-        message: 'Abstract class should not be instantiated',
-      },
-    );
-  });
-
-  test('Cursor should define [Symbol.asyncIterator]', () => {
-    const cursor = Object.create(Cursor.prototype);
-
-    assert.throws(
-      () => cursor[Symbol.asyncIterator](),
-      {
-        name: 'Error',
-        message: 'Method is not implemented',
-      },
-    );
-  });
-
-  test('FileStorage should call FileLineCursor with inputs in method', () => {
-    const query = { city: 'Roma' };
-    const fileStorage = new FileStorage('./storage.dat');
-
-    const cursor = fileStorage.select(query);
-
-    assert.strictEqual(cursor.query, query);
-  });
-
-  test('FileLineCursor should define [Symbol.asyncIterator]', () => {
+  test('should select records by single query', async () => {
+    const db = new Storage('mockStorage.dat');
     const query = { city: 'Roma' };
 
-    const db = new FileStorage('./storage.dat');
     const cursor = db.select(query);
 
-    assert.strictEqual(typeof cursor[Symbol.asyncIterator], 'function');
+    const results = [];
+    for await (const record of cursor) {
+      results.push(record);
+    }
+
+    assert.deepStrictEqual(results, [
+      { city: 'Roma', name: 'Marcus Aurelius' },
+      { city: 'Roma', name: 'Lucius Verus' },
+    ]);
   });
+
+  test('should select records by multiple queries', async () => {
+    const db = new Storage('mockStorage.dat');
+    const query = { city: 'Roma', name: 'Lucius Verus' }; // Multiple queries
+
+    const cursor = db.select(query);
+
+    const results = [];
+    for await (const record of cursor) {
+      results.push(record);
+    }
+
+    assert.deepStrictEqual(results, [
+      { city: 'Roma', name: 'Lucius Verus' },
+    ]);
+  });
+
+  test('should not filter records on empty query', async () => {
+    const db = new Storage('mockStorage.dat');
+    const query = {};
+
+    const cursor = db.select(query);
+
+    const results = [];
+    for await (const record of cursor) {
+      results.push(record);
+    }
+
+    assert.deepStrictEqual(results, [
+      { city: 'Kiev', name: 'Glushkov' },
+      { city: 'Roma', name: 'Marcus Aurelius' },
+      { city: 'Shaoshan', name: 'Mao Zedong' },
+      { city: 'Roma', name: 'Lucius Verus' },
+    ]);
+  });
+
 
 });
 
 describe('2-module integration tests', () => {
   test('test', async () => {
     const query = { city: 'Roma' };
-    const db = new FileStorage('./storage.dat');
+    const db = new Storage('./storage.dat');
 
     const cursor = db.select(query);
 

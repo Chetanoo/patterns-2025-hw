@@ -3,6 +3,7 @@
 
 const fs = require('node:fs');
 const readline = require('node:readline');
+const path = require('node:path');
 
 class Database {
   constructor() {
@@ -31,13 +32,13 @@ class Cursor {
   }
 }
 
-class FileLineCursor extends Cursor {
-  constructor(fileStorage, query) {
+class LineCursor extends Cursor {
+  constructor(storage, query) {
     super();
     this.query = query;
     this.lines = readline
       .createInterface({
-        input: fileStorage.fileStream,
+        input: storage.stream,
         crlfDelay: Infinity,
       })
       [Symbol.asyncIterator]();
@@ -64,21 +65,21 @@ class FileLineCursor extends Cursor {
   }
 }
 
-class FileStorage extends Database {
+class Storage extends Database {
   constructor(fileName) {
     super();
     this.fileName = fileName;
-    this.fileStream = fs.createReadStream(fileName);
+    this.stream = fs.createReadStream(path.join(__dirname, fileName));
   }
 
   select(query) {
-    return new FileLineCursor(this, query);
+    return new LineCursor(this, query);
   }
 }
 
 module.exports = {
   Database,
   Cursor,
-  FileLineCursor,
-  FileStorage,
+  LineCursor,
+  Storage,
 };

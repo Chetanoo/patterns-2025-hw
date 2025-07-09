@@ -1,14 +1,8 @@
 'use strict';
 
-const poolify = (
-  factory,
-  options,
-  size,
-  max,
-) => {
+const poolify = (factory, options, size, max) => {
   const queue = [];
-  const instances = new Array(size).fill(null)
-    .map(() => factory(options));
+  const instances = new Array(size).fill(null).map(() => factory(options));
 
   let createdAmount = 0;
 
@@ -20,12 +14,13 @@ const poolify = (
       return;
     }
 
-    queue.push(callback);
-
     if (createdAmount + size < max) {
       createdAmount++;
       instances.push(factory(options));
+      return;
     }
+
+    queue.push(callback);
   };
 
   const release = (instance) => {
@@ -46,17 +41,15 @@ const poolify = (
 
 const createBuffer = ({ bufferSize }) => new Uint8Array(bufferSize);
 
-const pool = poolify(
-  createBuffer,
-  { bufferSize: 4096 },
-  5,
-  6,
-);
+const pool = poolify(createBuffer, { bufferSize: 4096 }, 5, 6);
 
 const callback = (instance) => {
-  setTimeout(() => {
-    console.log({ instance });
-  }, Math.random() * 3 * 1000);
+  setTimeout(
+    () => {
+      console.log({ instance });
+    },
+    Math.random() * 3 * 1000,
+  );
   pool.release(instance);
 };
 

@@ -1,26 +1,26 @@
 type QueryType = Record<string, string>;
 
 declare abstract class Database {
-  protected constructor();
   abstract select(query: QueryType): Cursor;
 }
 
 declare abstract class Cursor implements AsyncIterable<any>{
-  protected constructor();
+  protected current: number;
+  [Symbol.asyncIterator](): AsyncIterator<any>;
 }
 
-declare class FileLineCursor extends Cursor {
-  constructor(fileStorage: FileStorage, query: QueryType);
+declare class LineCursor extends Cursor {
+  constructor(storage: Storage, query: QueryType);
 }
 
-declare class FileStorage extends Database {
+declare class Storage extends Database {
   constructor(fileName: string);
-  select(query: QueryType): FileLineCursor;
+  select(query: QueryType): LineCursor;
 }
 
 export {
   Database,
   Cursor,
-  FileLineCursor,
-  FileStorage
+  LineCursor,
+  Storage
 }

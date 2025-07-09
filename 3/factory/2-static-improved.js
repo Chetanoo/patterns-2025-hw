@@ -22,5 +22,5 @@ console.dir({ p2 });
 
 module.exports = {
   Person,
-  personFactory: Creator,
+  personFactory: Creator.factory,
 };

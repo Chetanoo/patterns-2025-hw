@@ -13,7 +13,16 @@ type OptionsType = { level: LevelType } | { color: ColorType };
 
 const logger = (options: OptionsType) => (message: string) => {
   const date = new Date().toISOString();
-  console.log(`${options}${date}\t${message}`);
+
+  let color: string;
+
+  if ('level' in options) {
+    color = COLORS[options.level];
+  } else {
+    color = options.color;
+  }
+
+  console.log(`${color}${date}\t${message}`);
 };
 
 const warning = logger({level: 'warning'});
