@@ -27,7 +27,7 @@ class Pool {
 
     if (this.#createdAmount + this.#size < this.#max) {
       this.#createdAmount++;
-      this.#instances.push(this.#factory(this.#options));
+      callback(this.#factory(this.#options));
       return;
     }
 

@@ -16,7 +16,7 @@ const poolify = (factory, options, size, max) => {
 
     if (createdAmount + size < max) {
       createdAmount++;
-      instances.push(factory(options));
+      callback(factory(options));
       return;
     }
 
