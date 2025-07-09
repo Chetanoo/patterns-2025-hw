@@ -41,13 +41,10 @@ const RENDERERS = {
 };
 
 const selectStrategy = (strategy, name) => {
-  const rendererKey = Object.keys(strategy)
-    .find((key) => key === name);
-  return (
-    rendererKey
-      ? (data) => strategy[rendererKey](data)
-      : () => strategy['abstract']()
-  );
+  const rendererKey = name in strategy;
+  return rendererKey
+    ? (data) => strategy[name](data)
+    : (data) => strategy.abstract(data);
 };
 
 // Usage

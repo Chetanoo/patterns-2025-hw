@@ -3,7 +3,16 @@
 const RENDERERS = {
   abstract: () => 'Not implemented',
 
-  console: (data) => data,
+  console: (data) => {
+    const keys = Object.keys(data[0]);
+    const rows = data.map((row) =>
+      keys.map((key) => row[key] || '').join(' | '),
+    );
+    const header = keys.join(' | ');
+    const separator = keys.map(() => '---').join(' | ');
+
+    return [header, separator, ...rows].join('\n');
+  },
 
   web: (data) => {
     const keys = Object.keys(data[0]);
@@ -17,7 +26,6 @@ const RENDERERS = {
       '</table>',
     ];
     return output.join('');
-    // console.log(output.join(''));
   },
 
   markdown: (data) => {
@@ -34,18 +42,14 @@ const RENDERERS = {
       data.map(line).join(''),
     ];
     return output.join('');
-    // console.log(output.join(''));
   },
 };
 
 const selectStrategy = (strategy, name) => {
-  const rendererKey = Object.keys(strategy)
-    .find((key) => key === name);
-  return (
-    rendererKey
-      ? (data) => strategy[rendererKey](data)
-      : () => strategy['abstract']()
-  );
+  const rendererKey = name in strategy;
+  return rendererKey
+    ? (data) => strategy[name](data)
+    : (data) => strategy.abstract(data);
 };
 
 // Usage

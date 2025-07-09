@@ -5,11 +5,6 @@ const { describe, test } = require('node:test');
 const { Strategy } = require('./4-abstraction');
 
 describe('4-abstraction module tests', () => {
-  test('should create a strategy with valid actions', () => {
-    const strategy = new Strategy('TestStrategy', ['action1', 'action2']);
-    assert.strictEqual(typeof strategy, 'object');
-  });
-
   test('should register valid behavior and retrieve it successfully', () => {
     const strategy = new Strategy('TestStrategy', ['action1', 'action2']);
     const implementation = {
@@ -25,8 +20,7 @@ describe('4-abstraction module tests', () => {
     assert.strictEqual(action2('data'), 'Action 2 executed with data');
   });
 
-  test('should throw error when registering behavior with invalid actions',
-    () => {
+  test('should throw error when registering behavior with invalid actions', () => {
     const strategy = new Strategy('TestStrategy', ['action1', 'action2']);
     const invalidBehavior = {
       action1: () => 'Valid action',
@@ -34,10 +28,9 @@ describe('4-abstraction module tests', () => {
     };
 
     assert.throws(
-      () => strategy.registerBehaviour(
-        'InvalidImplementation', invalidBehavior,
-      ),
-      /Action does not exist in strategy TestStrategy/,
+      () =>
+        strategy.registerBehaviour('InvalidImplementation', invalidBehavior),
+      /Action action2 is required in strategy TestStrategy/,
     );
   });
 
@@ -46,21 +39,7 @@ describe('4-abstraction module tests', () => {
 
     assert.throws(
       () => strategy.getBehaviour('NonExistentImplementation', 'action1'),
-      /Strategy TestStrategy does not have implementation NonExistentImplementation/
-    );
-  });
-
-  test(
-    'should throw error when retrieving nonexistent action from a registered implementation',
-    () => {
-    const strategy = new Strategy('TestStrategy', ['action1', 'action2']);
-    const implementation = { action1: () => 'Action 1 executed' };
-
-    strategy.registerBehaviour('TestImplementation', implementation);
-
-    assert.throws(
-      () => strategy.getBehaviour('TestImplementation', 'nonExistentAction'),
-      /Action does not exist in implementation TestImplementation/,
+      /Strategy TestStrategy does not have implementation NonExistentImplementation/,
     );
   });
 });

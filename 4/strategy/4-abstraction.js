@@ -2,21 +2,21 @@
 
 class Strategy {
   #implementations = new Map();
-  #stragetyName;
-  #allowedActions;
+  #strategyName;
+  #actions;
 
   constructor(strategyName, actions) {
-    this.#stragetyName = strategyName;
-    this.#allowedActions = actions;
+    this.#strategyName = strategyName;
+    this.#actions = actions;
   }
 
   registerBehaviour(implementationName, behaviour) {
-    const actionNotExist = Object.keys(behaviour)
-      .some((action) => !this.#allowedActions.includes(action));
+    const requiredActions = this.#actions
+      .filter((action) => !behaviour[action]);
 
-    if (actionNotExist) {
+    if (requiredActions.length) {
       throw new Error(
-        `Action does not exist in strategy ${this.#stragetyName}`,
+        `Action ${requiredActions.join(', ')} is required in strategy ${this.#strategyName}`,
       );
     }
 
@@ -28,19 +28,11 @@ class Strategy {
 
     if (!implementation) {
       throw new Error(
-        `Strategy ${this.#stragetyName} does not have implementation ${implementationName}`,
+        `Strategy ${this.#strategyName} does not have implementation ${implementationName}`,
       );
     }
 
-    const action = implementation[actionName];
-
-    if (!action) {
-      throw new Error(
-        `Action does not exist in implementation ${implementationName}`,
-      );
-    }
-
-    return action;
+    return implementation[actionName];
   }
 }
 
