@@ -65,7 +65,7 @@ class LineCursor extends Cursor {
   }
 }
 
-class Storage extends Database {
+class FileStorage extends Database {
   constructor(fileName) {
     super();
     this.fileName = fileName;
@@ -81,5 +81,5 @@ module.exports = {
   Database,
   Cursor,
   LineCursor,
-  Storage,
+  FileStorage,
 };

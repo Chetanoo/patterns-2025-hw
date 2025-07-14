@@ -40,12 +40,9 @@ const RENDERERS = {
   },
 };
 
-const selectStrategy = (strategy, name) => {
-  const rendererKey = name in strategy;
-  return rendererKey
+const selectStrategy = (strategy, name) => name in strategy
     ? (data) => strategy[name](data)
     : (data) => strategy.abstract(data);
-};
 
 // Usage
 

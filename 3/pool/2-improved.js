@@ -1,13 +1,7 @@
 'use strict';
 
-const poolify = (
-  factory,
-  options,
-  size,
-  max,
-) => {
-  const instances = new Array(size).fill(null)
-    .map(() => factory(options));
+const poolify = (factory, options, size, max) => {
+  const instances = new Array(size).fill(null).map(() => factory(options));
 
   let createdAmount = 0;
 
@@ -37,12 +31,7 @@ const poolify = (
 
 const createBuffer = ({ bufferSize }) => new Uint8Array(bufferSize);
 
-const pool = poolify(
-  createBuffer,
-  { bufferSize: 4096 },
-  5,
-  10,
-);
+const pool = poolify(createBuffer, { bufferSize: 4096 }, 5, 10);
 
 const instance = pool.acquire();
 console.log({ instance });
