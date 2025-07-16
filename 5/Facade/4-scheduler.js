@@ -5,7 +5,7 @@ const { Console } = require('node:console');
 
 class Logger {
   constructor({ output }) {
-    this.console = output instanceof Console && output || console;
+    this.console = output instanceof Console ? output : console;
   }
 
   static color(level) {
