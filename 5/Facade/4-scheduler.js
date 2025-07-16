@@ -41,7 +41,11 @@ class Task extends EventEmitter {
   constructor(name, time, exec) {
     super();
     this.name = name;
-    typeof time === 'number' ? this.#interval(time) : this.#timeout(time);
+    if (typeof time === 'number') {
+      this.#interval(time);
+    } else {
+      this.#timeout(time);
+    }
     this.exec = exec;
     this.running = false;
     this.count = 0;
