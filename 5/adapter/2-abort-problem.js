@@ -17,7 +17,7 @@ const promisify =
         onAbort();
       }
 
-      abortSignal.addEventListener('abort', onAbort);
+      abortSignal.addEventListener('abort', onAbort, { once: true });
 
       const cleanup = () => {
         abortSignal.removeEventListener('abort', onAbort);
