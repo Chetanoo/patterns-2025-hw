@@ -9,7 +9,7 @@ declare class TimeoutCollection<K, V> {
 
   delete(key: K): void;
 
-  forEach(callback: (value: V, key: K, collection: Map<K, V>) => void): void;
+  forEach(callback: (value: V, key: K, collection: TimeoutCollection<K, V>) => void): void;
 
   clear(): void;
 
@@ -20,6 +20,8 @@ declare class TimeoutCollection<K, V> {
   entries(): IterableIterator<[K, V]>;
 
   keys(): IterableIterator<K>;
+
+  size(): number;
 
   [Symbol.iterator](): IterableIterator<[K, V]>;
 }

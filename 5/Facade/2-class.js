@@ -22,6 +22,10 @@ class TimeoutCollection {
     return this.collection.get(key);
   }
 
+  size() {
+    return this.collection.size();
+  }
+
   has(key) {
     return this.collection.has(key);
   }
