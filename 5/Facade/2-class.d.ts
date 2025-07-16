@@ -20,6 +20,8 @@ declare class TimeoutCollection<K, V> {
   entries(): IterableIterator<[K, V]>;
 
   keys(): IterableIterator<K>;
+
+  [Symbol.iterator](): IterableIterator<[K, V]>;
 }
 
 export = TimeoutCollection;

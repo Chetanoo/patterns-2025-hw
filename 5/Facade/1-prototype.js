@@ -15,9 +15,7 @@ TimeoutCollection.prototype.set = function (key, value) {
   const timeout = setTimeout(() => {
     this.delete(key);
   }, this.timeout);
-  if (timeout.unref) {
-    timeout.unref();
-  }
+  if (timeout.unref) timeout.unref();
   this.collection.set(key, value);
   this.timers.set(key, timeout);
 };

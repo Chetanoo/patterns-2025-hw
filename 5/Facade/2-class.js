@@ -13,9 +13,7 @@ class TimeoutCollection {
     const timeout = setTimeout(() => {
       this.delete(key);
     }, this.timeout);
-    if (timeout.unref) {
-      timeout.unref();
-    }
+    if (timeout.unref) timeout.unref();
     this.collection.set(key, value);
     this.timers.set(key, timeout);
   }
@@ -63,6 +61,10 @@ class TimeoutCollection {
 
   keys() {
     return this.collection.keys();
+  }
+
+  [Symbol.iterator]() {
+    return this.collection[Symbol.iterator]();
   }
 }
 
