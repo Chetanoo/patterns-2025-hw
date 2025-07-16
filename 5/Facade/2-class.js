@@ -40,15 +40,15 @@ class TimeoutCollection {
   }
 
   clear() {
-    for (const [key, timer] in this.timers) {
+    for (const timer of this.timers.values()) {
       clearTimeout(timer);
-      this.collection.delete(key);
-      this.timers.delete(key);
     }
+    this.collection.clear();
+    this.timers.clear();
   }
 
   toArray() {
-    return this.collection.entries();
+    return this.collection.entries().toArray();
   }
 
   values() {
@@ -86,3 +86,5 @@ setTimeout(() => {
     console.dir({ array: hash.toArray() });
   }, 500);
 }, 1500);
+
+hash.clear();

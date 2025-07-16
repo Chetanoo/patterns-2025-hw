@@ -13,7 +13,7 @@ declare class TimeoutCollection<K, V> {
 
   clear(): void;
 
-  toArray(): IterableIterator<[K, V]>;
+  toArray(): [K, V][];
 
   values(): IterableIterator<V>;
 
