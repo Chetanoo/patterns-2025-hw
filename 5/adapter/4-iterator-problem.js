@@ -6,27 +6,27 @@
 
 class Timer {
   #counter = 0;
-  #resolve = null;
+  #queue = [];
 
   constructor(delay) {
     setInterval(() => {
       this.#counter++;
-      if (this.#resolve) {
-        this.#resolve({
+      for (const resolve of this.#queue) {
+        resolve({
           value: this.#counter,
           done: false,
         });
       }
+      this.#queue = [];
     }, delay);
   }
 
   [Symbol.asyncIterator]() {
     const next = () =>
       new Promise((resolve) => {
-        this.#resolve = resolve;
+        this.#queue.push(resolve);
       });
-    const iterator = { next };
-    return iterator;
+    return { next };
   }
 }
 
@@ -34,6 +34,7 @@ class Timer {
 
 const main = async () => {
   const timer = new Timer(1000);
+  const iter = timer[Symbol.asyncIterator]();
 
   (async () => {
     console.log('Section 1 start');
@@ -44,7 +45,6 @@ const main = async () => {
 
   (async () => {
     console.log('Section 2 start');
-    const iter = timer[Symbol.asyncIterator]();
     do {
       const { value, done } = await iter.next();
       console.log({ section: 2, step: value, done });
@@ -53,7 +53,6 @@ const main = async () => {
 
   (async () => {
     console.log('Section 3 start');
-    const iter = timer[Symbol.asyncIterator]();
     do {
       const { value, done } = await iter.next();
       console.log({ section: 3, step: value, done });

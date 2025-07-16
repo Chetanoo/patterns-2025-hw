@@ -9,18 +9,18 @@ const promisify =
   (...args) => {
     const abortSignal = args.pop();
     return new Promise((resolve, reject) => {
-      if (abortSignal.aborted) {
-        reject(new Error('Aborted'));
-      }
-
-      const abortCallback = () => {
+      const onAbort = () => {
         reject(new Error('Aborted'));
       };
 
-      abortSignal.addEventListener('abort', abortCallback);
+      if (abortSignal.aborted) {
+        onAbort();
+      }
+
+      abortSignal.addEventListener('abort', onAbort);
 
       const cleanup = () => {
-        abortSignal.removeEventListener('abort', abortCallback);
+        abortSignal.removeEventListener('abort', onAbort);
       };
 
       const callback = (err, data) => {
